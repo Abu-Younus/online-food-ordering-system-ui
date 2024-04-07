@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { darkTheme } from "./theme/DarkTheme";
+import UserRoutes from "./routers/UserRoutes";
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from "react";
+import { getUser } from "./components/state/authenticate/Action";
+import { store } from "./components/state/store";
 
 function App() {
+  /* dispatch state */
+  const dispatch = useDispatch();
+
+  /* get jwt for user data */
+  const jwt = localStorage.getItem("jwt")
+
+  /* auth reducer initialize */
+  const {auth} = useSelector(store=>store)
+
+  /* use effect hook for get data to login user */
+  useEffect(() => {
+    dispatch(getUser(auth.jwt || jwt))
+  },[auth.jwt])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <UserRoutes />
+    </ThemeProvider>
   );
 }
 
