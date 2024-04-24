@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from "react";
 import { getUser } from "./components/state/authenticate/Action";
 import { store } from "./components/state/store";
+import { findCart } from "./components/state/cart/Action";
 
 function App() {
   /* dispatch state */
@@ -20,6 +21,7 @@ function App() {
   /* use effect hook for get data to login user */
   useEffect(() => {
     dispatch(getUser(auth.jwt || jwt))
+    dispatch(findCart(jwt))
   },[auth.jwt])
 
   return (

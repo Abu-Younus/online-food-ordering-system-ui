@@ -1,7 +1,7 @@
 import { Button, Card } from '@mui/material'
 import React from 'react'
 
-const OrderCard = () => {
+const OrderCard = ({order, item}) => {
   return (
     <>
         {/* order items card section start */}
@@ -9,16 +9,16 @@ const OrderCard = () => {
             <div className="flex items-center space-x-5">
                 <img 
                     className="w-16 h-16"
-                    src="https://cdn.pixabay.com/photo/2020/10/05/19/55/hamburger-5630646_960_720.jpg" 
-                    alt="" 
+                    src={item.food.images[0]} 
+                    alt={item.food.name} 
                 />
                 <div>
-                    <p>Burger</p>
-                    <p>৳499</p>
+                    <p>{item.food.name}</p>
+                    <p>৳{item.totalPrice}</p>
                 </div>
             </div>
             <div>
-                <Button className="cursor-not-allowed" variant="contained">Completed</Button>
+                <Button className="cursor-not-allowed" variant="contained">{order.orderStatus}</Button>
             </div>
         </Card>
         {/* order items card section end */}

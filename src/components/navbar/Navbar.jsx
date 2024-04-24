@@ -12,8 +12,8 @@ const Navbar = () => {
   {/* navigate state */}
   const navigate = useNavigate()
 
-  {/* authenticate state */}
-  const {auth} = useSelector(store=>store)
+  {/* authenticate & cart state */}
+  const {auth, cart} = useSelector(store=>store)
 
   const handleUserProfileNavigate = () => {
     if(auth.user.role === "ROLE_CUSTOMER") {
@@ -55,8 +55,8 @@ const Navbar = () => {
         </div>
 
         <div>
-          <IconButton>
-            <Badge color="secondary" badgeContent={3}>
+          <IconButton onClick={() => navigate("/cart")}>
+            <Badge color="secondary" badgeContent={cart.cart?.item.length}>
               <ShoppingCartIcon sx={{ fontSize: "1.5rem" }} />
             </Badge>
           </IconButton>

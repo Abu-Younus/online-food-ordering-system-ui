@@ -1,3 +1,4 @@
+
 import { api } from "../../config/api"
 import { CREATE_ORDER_FAILURE, CREATE_ORDER_REQUEST, CREATE_ORDER_SUCCESS, GET_USER_NOTIFICATION_FAILURE, GET_USER_NOTIFICATION_REQUEST, GET_USER_NOTIFICATION_SUCCESS, GET_USER_ORDERS_FAILURE, GET_USER_ORDERS_REQUEST, GET_USER_ORDERS_SUCCESS } from "./ActionType"
 
@@ -11,9 +12,9 @@ export const createOrder = (requestData) => {
                     Authorization: `Bearer ${requestData.jwt}`
                 }
             })
-            // if(data.payment_url) {
-            //     window.location.href = data.payment_url
-            // }
+            if(data.payment_url) {
+                window.location.href = data.payment_url
+            }
             dispatch({type: CREATE_ORDER_SUCCESS, payload: data})
         } catch (error) {
             dispatch({type: CREATE_ORDER_FAILURE, payload: error})

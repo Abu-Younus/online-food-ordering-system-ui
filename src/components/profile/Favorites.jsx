@@ -1,19 +1,18 @@
 import React from 'react'
 import RestaurantCard from '../restaurant/RestaurantCard'
-
-
-{/* favorites items array */}
-const favoritesItem = [1,1,1]
+import { useSelector } from "react-redux"
+import { store } from '../state/store'
 
 const Favorites = () => {
+  const {auth} = useSelector(store=>store)
   return (
     <div>
       {/* user favorites section start */}
       <h1 className="text-xl text-center font-semibold py-5">My Favorites</h1>
       <div className="flex flex-wrap gap-4 justify-center">
         {
-          /* favorites items array map function */
-          favoritesItem.map((item) => <RestaurantCard />)
+          /* favorites items map function */
+          auth.favorites.map((item) => <RestaurantCard item={item} />)
         }
       </div>
       {/* user favorites section end */}

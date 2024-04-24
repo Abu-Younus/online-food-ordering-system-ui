@@ -1,16 +1,11 @@
 import { CalendarToday, LocationOn } from '@mui/icons-material'
 import { Divider, FormControl, FormControlLabel, Grid, Radio, RadioGroup, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import MenuCard from './MenuCard'
-
-{/* food categories array */}
-const categories = [
-    "Pizza",
-    "Biriyani",
-    "Burger",
-    "Chicken",
-    "Rolls"
-]
+import { useNavigate, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from "react-redux"
+import { getRestaurantById, getRestaurantCategory } from '../state/restaurant/Action'
+import { getMenuItemsByRestaurantId } from '../state/menu/Action'
 
 {/* food type array */}
 const foodTypes = [
@@ -21,16 +16,59 @@ const foodTypes = [
 ]
 
 const RestaurantDetails = () => {
-    {/* menu item array */}
-    const menu = [1,1,1,1,1,1,1]
-
     {/* all use state */}
     const [foodType, setFoodType] = useState("all")
 
+    {/* restaurant details navigate hook */}
+    const navigate = useNavigate()
+
+    {/* restaurant details dispatch hook */}
+    const dispatch = useDispatch()
+
+    {/* user token */}
+    const jwt = localStorage.getItem("jwt")
+
+    {/* auth reducer store */}
+    const {auth, restaurant, menu} = useSelector(store=>store)
+
+    {/* selected category use state hook */}
+    const {selectedCategory, setSelectedCategory} = useState(null)
+
+    {/* restaurant params */}
+    const {id,city} = useParams()
+
+    console.log("restaurant", restaurant)
+
     {/* food type handle filter function */}
     const handleFilter = (e) => {
+        setFoodType(e.target.value)
         console.log(e.target.value, e.target.name)
     }
+
+    {/* food category handle filter function */}
+    const handleFilterCategory = (e) => {
+        setSelectedCategory(e.target.value)
+        console.log(e.target.value, e.target.name)
+    }
+
+    {/* restaurant details of use effect hook */}
+    useEffect(() => {
+        dispatch(getRestaurantById({jwt, restaurantId: id}))
+        dispatch(getRestaurantCategory({jwt, restaurantId: id}))
+    }, [])
+
+    {/* restaurant menu item use effect hook */}
+    useEffect(() => {
+        dispatch(getMenuItemsByRestaurantId({
+            jwt, 
+            restaurantId: id, 
+            vegetarian: foodType === 'vegetarian', 
+            nonVegetarian: foodType === 'non_vegetarian', 
+            seasonal: foodType === 'seasonal', 
+            foodCategory: selectedCategory
+        }))
+    }, [selectedCategory, foodType])
+
   return (
     <div className="px-5 lg:px-20">
         {/* restaurant details start */}
@@ -42,7 +80,7 @@ const RestaurantDetails = () => {
                     <Grid item xs={12}>
                         <img 
                             className="w-full h-[40vh] object-cover"
-                            src="https://cdn.pixabay.com/photo/2023/04/17/20/19/drink-7933279_640.jpg" 
+                            src={restaurant.restaurant?.images[0]} 
                             alt="" 
                         />
                     </Grid>
@@ -50,7 +88,7 @@ const RestaurantDetails = () => {
                     <Grid item xs={12} lg={6}>
                         <img 
                             className="w-full h-[40vh] object-cover"
-                            src="https://cdn.pixabay.com/photo/2017/08/03/21/48/drinks-2578446_640.jpg" 
+                            src={restaurant.restaurant?.images[1]} 
                             alt="" 
                         />
                     </Grid>
@@ -69,11 +107,11 @@ const RestaurantDetails = () => {
             {/* restaurant name, price, description */}
             <div className="pt-3 pb-5">
                 <h1 className="text-4xl font-semibold">
-                    Fast Food
+                    {restaurant.restaurant?.name}
                 </h1>
 
                 <p className="text-gray-500 mt-1">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum molestiae harum ullam voluptatibus, reiciendis, quaerat eaque voluptatum animi at, quam sed architecto amet numquam a voluptas obcaecati laborum natus dicta!
+                    {restaurant.restaurant?.description}
                 </p>
 
                 <div className="space-y-3 mt-3">
@@ -143,17 +181,17 @@ const RestaurantDetails = () => {
 
                         <FormControl className="py-10 space-y-5" component={"fieldset"}>
                             <RadioGroup 
-                                onChange={handleFilter}
-                                name="food_type" 
-                                value={foodType}
+                                onChange={handleFilterCategory}
+                                name="selectedCategory" 
+                                value={selectedCategory}
                             >
                                 {
-                                    categories.map((item) =>
+                                    restaurant.categories.map((item) =>
                                         <FormControlLabel 
                                             key={item}
-                                            value={item} 
+                                            value={item.name} 
                                             control={<Radio />} 
-                                            label={item} 
+                                            label={item.name} 
                                         />
                                     )
                                 }
@@ -168,7 +206,7 @@ const RestaurantDetails = () => {
 
             {/* food menu start */}
             <div className="space-y-5 lg:w-[80%] lg:pl-10">
-                {menu.map((item) => <MenuCard />)}
+                {menu.menuItems.map((item) => <MenuCard item={item} />)}
             </div>
             {/* food menu end */}
 

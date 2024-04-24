@@ -24,12 +24,13 @@ export const getMenuItemsByRestaurantId = (requestData) => {
         dispatch({type: GET_MENU_ITEMS_BY_RESTAURANT_ID_REQUEST})
         try {
             const {data} = await api.get(`/api/food/restaurant/${requestData.restaurantId}
-            ?vegetarian=${requestData.vegetarian}&non_vegetarian=${requestData.nonVegetarian}
-            &seasonal=${requestData.seasonal}&food_category=${requestData.foodCategory}`, {
+            ?vegetarian=${requestData.vegetarian}&nonVegetarian=${requestData.nonVegetarian}
+            &seasonal=${requestData.seasonal}&foodCategory=${requestData.foodCategory}`, {
                 headers: {
                     Authorization: `Bearer ${requestData.jwt}`
                 }
             })
+            console.log("menu item by restaurant", data)
             dispatch({type: GET_MENU_ITEMS_BY_RESTAURANT_ID_SUCCESS, payload: data})
         } catch (error) {
             dispatch({type: GET_MENU_ITEMS_BY_RESTAURANT_ID_FAILURE, payload: error})

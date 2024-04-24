@@ -55,7 +55,7 @@ export const authReducer = (state=initialState, action) => {
                 error: null,
                 favorites: isPresentInFavorites(state.favorites, action.payload)
                 ? state.favorites.filter((item) => item.id !== action.payload.id)
-                : [action.payload, ...state.favorites]
+                : [...state.favorites, action.payload]
             }
 
         case LOGOUT:

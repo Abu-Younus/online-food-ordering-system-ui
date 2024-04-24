@@ -1,27 +1,39 @@
 import { ExpandMore } from '@mui/icons-material'
 import { Accordion, AccordionDetails, AccordionSummary, Button, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
+import { CategorizeIngredients } from '../util/CategorizeIngredients'
+import { useDispatch } from 'react-redux'
+import { addItemToCart } from '../state/cart/Action'
 
-{/* category & ingredient array */}
-const ingredients = [
-    {
-        category: "Nuts & Seeds",
-        ingredient: ["Cashews"]
-    },
-    {
-        category: "Protein",
-        ingredient: ["Ground beef", "Bacon strips"]
-    },
-    {
-        category: "Bread",
-        ingredient: ["Hamburger buns"]
-    },
-]
+const MenuCard = ({item}) => {
+    {/* select ingredients hook */}
+    const [selectedIngredients, setSelectedIngredients] = useState([])
 
-const MenuCard = () => {
+    {/* use dispatch hook */}
+    const dispatch = useDispatch()
+
     {/* food ingredient checkbox handle function */}
-    const handleCheckboxChange = (value) => {
-        console.log(value)
+    const handleCheckboxChange = (itemName) => {
+        if(selectedIngredients.includes(itemName)) {
+            setSelectedIngredients(selectedIngredients.filter((item) => item !== itemName))
+        } else {
+            setSelectedIngredients([...selectedIngredients, itemName])
+        }
+    }
+
+    {/* add item to cart handle function */}
+    const handleAddItemToCart = (e) => {
+        e.preventDefault()
+        const requestData = {
+            token: localStorage.getItem('jwt'),
+            cartItem: {
+                foodId: item.id,
+                quantity: 1,
+                ingredients: selectedIngredients
+            }
+        }
+        dispatch(addItemToCart(requestData))
+        console.log("cart data ", requestData)
     }
 
   return (
@@ -38,14 +50,14 @@ const MenuCard = () => {
                     <div className="lg:flex items-center lg:gap-5">
                         <img 
                             className="w-[7rem] h-[7rem] object-cover"
-                            src="https://cdn.pixabay.com/photo/2020/10/05/19/55/hamburger-5630646_960_720.jpg" 
-                            alt="" 
+                            src={item.images[0]}
+                            alt={item.name} 
                         />
                         <div className="space-y-1 lg:space-y-5 lg:max-w-2xl">
-                            <p className="font-semibold text-xl">Burger</p>
-                            <p>৳499</p>
+                            <p className="font-semibold text-xl">{item.name}</p>
+                            <p>৳{item.price}</p>
                             <p className="text-gray-400">
-                                Nice Food
+                                {item.description}
                             </p>
                         </div>
                     </div>
@@ -55,16 +67,20 @@ const MenuCard = () => {
 
             <AccordionDetails>
                 {/* food item ingredient & category start */}
-                <form>
+                <form onSubmit={handleAddItemToCart}>
                     <div className="flex flex-wrap gap-5">
                         {
-                            ingredients.map((item) => 
+                            Object.keys(CategorizeIngredients(item.ingredientsItems)).map((category) => 
                                 <div>
-                                    <p>{item.category}</p>
+                                    <p>{category}</p>
                                     <FormGroup>
                                         {
-                                            item.ingredient.map((item) =>
-                                                <FormControlLabel control={<Checkbox onChange={() => handleCheckboxChange(item)} />} label={item} />
+                                            CategorizeIngredients(item.ingredientsItems)[category].map((item) =>
+                                                <FormControlLabel 
+                                                    key={item.id}
+                                                    control={<Checkbox onChange={() => handleCheckboxChange(item.name)} />}
+                                                    label={item.name} 
+                                                 />
                                             )
                                         }
                                     </FormGroup>
